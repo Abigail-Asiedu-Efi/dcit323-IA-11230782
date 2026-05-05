@@ -96,7 +96,9 @@ Frontend on Netlify/Vercel/Render static site:
 
 - Root directory: `frontend`
 - Build command: `corepack enable && pnpm install --frozen-lockfile && pnpm build`
-- Publish directory: `frontend/dist`
+- Publish directory: `dist` when Netlify uses the included `netlify.toml`, or `frontend/dist` if configuring from the repository root manually
 - Environment variable: `VITE_API_URL=https://your-render-api-url`
 
 After deploying the frontend, update the backend `CLIENT_URL` to match the deployed frontend origin so cookies and CORS work.
+
+The included `netlify.toml` is configured for Netlify monorepo builds from the repository root.
