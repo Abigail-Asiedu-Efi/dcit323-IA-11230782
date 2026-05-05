@@ -347,7 +347,7 @@ function shell(content) {
 
   return `
     <div class="min-h-screen overflow-hidden ${theme.text()}">
-      <header class="sticky top-0 z-30 border-b ${theme.border()} ${theme.nav()} backdrop-blur-2xl">
+      <header class="sticky top-0 z-30 border-b ${theme.border()} ${theme.nav()} backdrop-blur-md">
         <div class="${ui.page} flex items-center justify-between gap-4 py-4">
           <button class="group flex items-center gap-3 text-left" data-nav="market" aria-label="Open market">
             <span class="grid size-10 place-items-center border ${state.theme === "light" ? "border-dodger bg-dodger text-white shadow-[0_0_26px_rgba(30,144,255,0.28)]" : "border-neon/60 bg-neon text-void shadow-[0_0_26px_rgba(0,255,136,0.35)]"} text-lg font-black transition group-hover:rotate-6">E</span>
@@ -402,21 +402,40 @@ function shell(content) {
 }
 
 function renderHeroStats(top, gainers, watchCount) {
+  const changeLabel = top ? `${top.change24h >= 0 ? "+" : ""}${top.change24h}%` : "--";
+  const pulseBars = [78, 48, 88, 62, 96, 54, 72];
+
   return `
-    <div class="${ui.panelStrong} p-5 transition duration-300 hover:-translate-y-1 ${state.theme === "light" ? "hover:border-dodger/40" : "hover:border-neon/40"}">
-      <div class="flex items-center justify-between border-b border-cyan-200/10 pb-4">
-        <span class="text-sm font-bold text-cyan-100/55">Session</span>
-        <strong class="${state.user ? theme.accent() : theme.alt()}">${state.user ? "Authenticated" : "Guest"}</strong>
+    <div class="${ui.panelStrong} overflow-hidden transition duration-300 hover:-translate-y-1 ${state.theme === "light" ? "hover:border-dodger/40" : "hover:border-neon/40"}">
+      <div class="relative p-6">
+        <div class="absolute -right-10 -top-12 h-40 w-40 ${state.theme === "light" ? "bg-dodger/12" : "bg-neon/10"} blur-3xl"></div>
+        <div class="relative flex items-start justify-between gap-4">
+          <div>
+            <span class="text-xs font-black uppercase tracking-[0.18em] ${theme.kicker()}">Market pulse</span>
+            <h2 class="mt-3 text-3xl font-black leading-none ${theme.text()}">Live asset signal</h2>
+          </div>
+          <span class="border ${theme.border()} ${theme.soft()} px-3 py-2 text-sm font-black ${top && top.change24h >= 0 ? theme.positive() : "text-danger"}">${changeLabel}</span>
+        </div>
+        <div class="relative mt-8 grid gap-5 md:grid-cols-[1fr_160px] md:items-end">
+          <div>
+            <span class="text-sm font-black uppercase tracking-[0.16em] ${theme.dim()}">${top ? escapeHtml(top.name) : "Market leader"}</span>
+            <strong class="${theme.glowText()} mt-2 block text-7xl font-black leading-none ${theme.accent()}">${top ? escapeHtml(top.symbol) : "--"}</strong>
+            <em class="mt-3 block not-italic text-2xl font-black ${theme.text()}">${top ? formatCurrency(top.price) : "Load market"}</em>
+          </div>
+          <div class="flex h-28 items-end gap-2 border-l ${theme.border()} pl-5">
+            ${pulseBars
+              .map(
+                (height, index) =>
+                  `<span class="flex-1 ${index % 2 ? (state.theme === "light" ? "bg-dodger/35" : "bg-orchid/45") : (state.theme === "light" ? "bg-dodger" : "bg-neon")} transition duration-300" style="height:${height}%"></span>`
+              )
+              .join("")}
+          </div>
+        </div>
       </div>
-      <div class="my-5 border ${state.theme === "light" ? "border-dodger/30 bg-gradient-to-br from-dodger/20 via-white/60 to-transparent" : "border-neon/25 bg-gradient-to-br from-neon/18 via-orchid/10 to-transparent"} p-6">
-        <span class="text-sm font-black uppercase tracking-[0.16em] ${theme.dim()}">Signal leader</span>
-        <strong class="${theme.glowText()} mt-2 block text-7xl font-black leading-none ${theme.accent()}">${top ? escapeHtml(top.symbol) : "--"}</strong>
-        <em class="mt-3 block not-italic text-2xl font-black ${theme.text()}">${top ? formatCurrency(top.price) : "Load market"}</em>
-      </div>
-      <div class="grid grid-cols-3 gap-3">
-        <span class="border ${theme.border()} ${theme.soft()} p-3"><strong class="block text-2xl ${theme.text()}">${state.crypto.length}</strong><span class="text-xs font-bold ${theme.dim()}">Assets</span></span>
-        <span class="border ${theme.border()} ${theme.soft()} p-3"><strong class="block text-2xl ${theme.accent()}">${gainers}</strong><span class="text-xs font-bold ${theme.dim()}">Gainers</span></span>
-        <span class="border ${theme.border()} ${theme.soft()} p-3"><strong class="block text-2xl ${theme.alt()}">${watchCount}</strong><span class="text-xs font-bold ${theme.dim()}">Saved</span></span>
+      <div class="grid border-t ${theme.border()} sm:grid-cols-3">
+        <span class="p-4"><strong class="block text-3xl ${theme.text()}">${state.crypto.length}</strong><span class="text-xs font-bold uppercase tracking-[0.12em] ${theme.dim()}">Assets</span></span>
+        <span class="border-t ${theme.border()} p-4 sm:border-l sm:border-t-0"><strong class="block text-3xl ${theme.accent()}">${gainers}</strong><span class="text-xs font-bold uppercase tracking-[0.12em] ${theme.dim()}">Gainers</span></span>
+        <span class="border-t ${theme.border()} p-4 sm:border-l sm:border-t-0"><strong class="block text-3xl ${theme.alt()}">${watchCount}</strong><span class="text-xs font-bold uppercase tracking-[0.12em] ${theme.dim()}">Saved</span></span>
       </div>
     </div>
   `;
@@ -566,29 +585,137 @@ function renderAuth(mode) {
 }
 
 function renderProfile() {
+  const savedAssets = state.crypto.filter((coin) => state.watchlist.includes(getCoinId(coin)));
+  const topMover = savedAssets.length
+    ? [...savedAssets].sort((a, b) => b.change24h - a.change24h)[0]
+    : [...state.crypto].sort((a, b) => b.change24h - a.change24h)[0];
+  const joined = state.user.createdAt ? formatDate(state.user.createdAt) : "Recently";
+  const accountAge = state.user.createdAt
+    ? Math.max(1, Math.ceil((Date.now() - new Date(state.user.createdAt).getTime()) / 86400000))
+    : 1;
+  const savedPreview = savedAssets.slice(0, 4);
+
   return shell(`
-    <main class="${ui.page} grid min-h-[calc(100vh-80px)] place-items-center py-12">
-      <section class="${ui.panelStrong} w-full max-w-3xl p-7">
-        <div class="grid gap-6 md:grid-cols-[112px_1fr] md:items-center">
-          <div class="relative size-28">
-            <img class="size-28 rounded-full object-cover ${state.theme === "light" ? "shadow-[0_0_34px_rgba(30,144,255,0.24)]" : "shadow-[0_0_34px_rgba(0,255,136,0.32)]"}" src="${escapeHtml(avatarUrl())}" alt="${escapeHtml(state.user.name)} avatar" />
-            <label class="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap border ${theme.border()} ${theme.soft()} px-3 py-1 text-xs font-black ${theme.text()} transition ${state.theme === "light" ? "hover:border-dodger" : "hover:border-neon"}">
-              Change
-              <input class="sr-only" type="file" accept="image/png,image/jpeg,image/webp" data-avatar-upload />
-            </label>
+    <main class="${ui.page} py-8 md:py-12">
+      <section class="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,.95fr)]">
+        <div class="${ui.panelStrong} overflow-hidden">
+          <div class="relative p-6 md:p-8">
+            <div class="absolute right-0 top-0 h-40 w-40 ${state.theme === "light" ? "bg-dodger/14" : "bg-neon/12"} blur-3xl"></div>
+            <div class="relative grid gap-6 sm:grid-cols-[128px_1fr] sm:items-center">
+              <div class="relative size-32">
+                <img class="size-32 rounded-full object-cover ${state.theme === "light" ? "shadow-[0_0_42px_rgba(30,144,255,0.24)]" : "shadow-[0_0_42px_rgba(0,255,136,0.28)]"}" src="${escapeHtml(avatarUrl())}" alt="${escapeHtml(state.user.name)} avatar" />
+                <label class="absolute right-0 top-1 grid size-11 place-items-center rounded-full bg-white shadow-[0_10px_24px_rgba(2,6,23,0.22)] transition hover:-translate-y-0.5 hover:bg-slate-100" title="Upload profile photo" aria-label="Upload profile photo">
+                  <img class="size-6 object-contain" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4f7.svg" alt="" aria-hidden="true" />
+                  <span class="sr-only">Upload profile photo</span>
+                  <input class="sr-only" type="file" accept="image/png,image/jpeg,image/webp" data-avatar-upload />
+                </label>
+              </div>
+              <div class="min-w-0">
+                <p class="mb-3 text-xs font-black uppercase tracking-[0.18em] ${theme.kicker()}">EfiChain account</p>
+                <h1 class="break-words text-4xl font-black leading-none ${theme.text()} md:text-6xl">${escapeHtml(state.user.name)}</h1>
+                <p class="mt-4 break-all text-base font-bold ${theme.muted()}">${escapeHtml(state.user.email)}</p>
+                <div class="mt-6 flex flex-wrap gap-3">
+                  <button class="${theme.primary()}" data-nav="market">Open market</button>
+                  <button class="${theme.secondary()}" data-refresh="market">Refresh assets</button>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <p class="mb-2 text-xs font-black uppercase tracking-[0.18em] ${theme.kicker()}">Protected profile</p>
-            <h1 class="text-4xl font-black ${theme.text()} md:text-6xl">${escapeHtml(state.user.name)}</h1>
-            <p class="mt-3 text-lg ${theme.muted()}">${escapeHtml(state.user.email)}</p>
+          <div class="grid border-t ${theme.border()} md:grid-cols-3">
+            <div class="p-5">
+              <span class="text-xs font-black uppercase tracking-[0.14em] ${theme.dim()}">Saved assets</span>
+              <strong class="mt-2 block text-4xl font-black ${theme.alt()}">${state.watchlist.length}</strong>
+            </div>
+            <div class="border-t ${theme.border()} p-5 md:border-l md:border-t-0">
+              <span class="text-xs font-black uppercase tracking-[0.14em] ${theme.dim()}">Account age</span>
+              <strong class="mt-2 block text-4xl font-black ${theme.text()}">${accountAge}d</strong>
+            </div>
+            <div class="border-t ${theme.border()} p-5 md:border-l md:border-t-0">
+              <span class="text-xs font-black uppercase tracking-[0.14em] ${theme.dim()}">Best signal</span>
+              <strong class="mt-2 block text-4xl font-black ${theme.accent()}">${topMover ? escapeHtml(topMover.symbol) : "--"}</strong>
+            </div>
           </div>
         </div>
-        <dl class="mt-8 grid gap-3">
-          <div class="grid gap-2 border-t ${theme.border()} pt-4 md:grid-cols-[140px_1fr]"><dt class="font-black ${theme.dim()}">User ID</dt><dd class="break-all font-bold ${theme.text()}">${escapeHtml(state.user.id)}</dd></div>
-          <div class="grid gap-2 border-t ${theme.border()} pt-4 md:grid-cols-[140px_1fr]"><dt class="font-black ${theme.dim()}">Joined</dt><dd class="font-bold ${theme.text()}">${formatDate(state.user.createdAt)}</dd></div>
-          <div class="grid gap-2 border-t ${theme.border()} pt-4 md:grid-cols-[140px_1fr]"><dt class="font-black ${theme.dim()}">Status</dt><dd class="font-bold ${theme.accent()}">Active account</dd></div>
-          <div class="grid gap-2 border-t ${theme.border()} pt-4 md:grid-cols-[140px_1fr]"><dt class="font-black ${theme.dim()}">Watchlist</dt><dd class="font-bold ${theme.alt()}">${state.watchlist.length} saved assets</dd></div>
-        </dl>
+
+        <aside class="${ui.panel} p-6 md:p-7">
+          <p class="mb-3 text-xs font-black uppercase tracking-[0.18em] ${theme.alt()}">Account snapshot</p>
+          <h2 class="text-3xl font-black ${theme.text()}">Profile details</h2>
+          <dl class="mt-6 grid gap-4">
+            <div class="grid gap-1 border-t ${theme.border()} pt-4">
+              <dt class="text-xs font-black uppercase tracking-[0.14em] ${theme.dim()}">Email</dt>
+              <dd class="break-all font-bold ${theme.text()}">${escapeHtml(state.user.email)}</dd>
+            </div>
+            <div class="grid gap-1 border-t ${theme.border()} pt-4">
+              <dt class="text-xs font-black uppercase tracking-[0.14em] ${theme.dim()}">Joined</dt>
+              <dd class="font-bold ${theme.text()}">${joined}</dd>
+            </div>
+            <div class="grid gap-1 border-t ${theme.border()} pt-4">
+              <dt class="text-xs font-black uppercase tracking-[0.14em] ${theme.dim()}">Status</dt>
+              <dd class="font-black ${theme.accent()}">Active account</dd>
+            </div>
+            <div class="grid gap-1 border-t ${theme.border()} pt-4">
+              <dt class="text-xs font-black uppercase tracking-[0.14em] ${theme.dim()}">User ID</dt>
+              <dd class="break-all text-sm font-bold ${theme.muted()}">${escapeHtml(state.user.id)}</dd>
+            </div>
+          </dl>
+        </aside>
+      </section>
+
+      <section class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div class="${ui.panel} overflow-hidden">
+          <div class="flex flex-wrap items-end justify-between gap-4 border-b ${theme.border()} p-5">
+            <div>
+              <p class="mb-2 text-xs font-black uppercase tracking-[0.18em] ${theme.kicker()}">Watchlist</p>
+              <h2 class="text-3xl font-black ${theme.text()}">Saved market signals</h2>
+            </div>
+            <button class="${theme.chip()}" data-nav="market">Manage assets</button>
+          </div>
+          ${
+            savedPreview.length
+              ? savedPreview
+                  .map(
+                    (coin) => `
+                      <article class="grid gap-4 border-t ${theme.border()} p-4 transition ${theme.rowHover()} sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                        <div class="flex min-w-0 items-center gap-3">
+                          <img class="size-12 bg-white/15 object-cover" src="${escapeHtml(coin.image)}" alt="${escapeHtml(coin.name)} logo" />
+                          <div class="min-w-0">
+                            <strong class="block truncate ${theme.text()}">${escapeHtml(coin.name)}</strong>
+                            <span class="text-sm font-black uppercase tracking-[0.12em] ${theme.alt()}">${escapeHtml(coin.symbol)}</span>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-left sm:text-right">
+                          <span>
+                            <small class="block text-xs font-black uppercase tracking-[0.12em] ${theme.dim()}">Price</small>
+                            <strong class="${theme.text()}">${formatCurrency(coin.price)}</strong>
+                          </span>
+                          <span>
+                            <small class="block text-xs font-black uppercase tracking-[0.12em] ${theme.dim()}">24h</small>
+                            <strong class="${coin.change24h >= 0 ? theme.positive() : "text-danger"}">${coin.change24h >= 0 ? "+" : ""}${coin.change24h}%</strong>
+                          </span>
+                        </div>
+                      </article>
+                    `
+                  )
+                  .join("")
+              : `<div class="p-8">
+                  <p class="text-lg font-bold ${theme.muted()}">Your saved assets will appear here once you add coins from the market.</p>
+                  <button class="${theme.primary()} mt-5" data-nav="market">Find assets</button>
+                </div>`
+          }
+        </div>
+
+        <div class="${ui.panelStrong} p-6">
+          <p class="mb-3 text-xs font-black uppercase tracking-[0.18em] ${theme.alt()}">Next moves</p>
+          <h2 class="text-3xl font-black ${theme.text()}">Quick actions</h2>
+          <div class="mt-6 grid gap-3">
+            <button class="${theme.primary()} w-full" data-nav="market">Browse market</button>
+            <label class="block w-full border ${theme.border()} ${theme.soft()} px-5 py-3 text-center font-black ${theme.text()} transition ${state.theme === "light" ? "hover:border-dodger hover:text-dodger" : "hover:border-neon hover:text-neon"}">
+              Update profile photo
+              <input class="sr-only" type="file" accept="image/png,image/jpeg,image/webp" data-avatar-upload />
+            </label>
+            <button class="w-full border border-danger/35 bg-danger/10 px-5 py-3 font-black text-danger transition hover:bg-danger/15" data-action="logout">Log out</button>
+          </div>
+        </div>
       </section>
     </main>
   `);
@@ -624,7 +751,9 @@ function bindEvents() {
   document.querySelector("[data-refresh='market']")?.addEventListener("click", () => loadCrypto());
   document.querySelector("[data-action='theme']")?.addEventListener("click", toggleTheme);
   document.querySelector("[data-action='profile-menu']")?.addEventListener("click", toggleProfileMenu);
-  document.querySelector("[data-action='logout']")?.addEventListener("click", logout);
+  document.querySelectorAll("[data-action='logout']").forEach((button) => {
+    button.addEventListener("click", logout);
+  });
   document.querySelectorAll("[data-avatar-upload]").forEach((input) => {
     input.addEventListener("change", uploadAvatar);
   });

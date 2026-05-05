@@ -21,6 +21,12 @@
   }
 
   body {
+    --action-gradient: linear-gradient(135deg, #00ff88 0%, #83ffc6 48%, #d18cff 100%);
+    --action-hover-fg: #05070d;
+    --action-border: rgba(131, 255, 198, 0.72);
+    --action-glow: rgba(0, 255, 136, 0.22);
+    --link-color: #83ffc6;
+    --link-hover: #00ff88;
     min-width: 320px;
     margin: 0;
     color: #ecfeff;
@@ -33,6 +39,12 @@
   }
 
   body.theme-light {
+    --action-gradient: linear-gradient(135deg, #1e90ff 0%, #5ab1ff 48%, #d18cff 100%);
+    --action-hover-fg: #ffffff;
+    --action-border: rgba(30, 144, 255, 0.72);
+    --action-glow: rgba(30, 144, 255, 0.2);
+    --link-color: #1e90ff;
+    --link-hover: #0f6fcb;
     color: #07101b;
     background:
       radial-gradient(circle at 9% 12%, rgba(30, 144, 255, 0.22), transparent 30rem),
@@ -59,47 +71,130 @@
     font: inherit;
   }
 
-  button {
-    cursor: pointer;
-  }
-
   button:focus-visible,
-  input:focus-visible {
+  input:focus-visible,
+  a:focus-visible,
+  [aria-label="Upload profile photo"]:focus-within {
     outline: 2px solid #00ff88;
     outline-offset: 3px;
   }
 
   .theme-light button:focus-visible,
-  .theme-light input:focus-visible {
+  .theme-light input:focus-visible,
+  .theme-light a:focus-visible,
+  .theme-light [aria-label="Upload profile photo"]:focus-within {
     outline-color: #1e90ff;
   }
 }
 
 @layer utilities {
+  button,
+  a,
+  [aria-label="Upload profile photo"] {
+    transition:
+      color 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease,
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button,
+  [aria-label="Upload profile photo"] {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-size: 160% 160%;
+    background-position: 0% 50%;
+  }
+
+  button::before,
+  [aria-label="Upload profile photo"]::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+    background: var(--action-gradient);
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+
+  button:hover,
+  [aria-label="Upload profile photo"]:hover {
+    color: var(--action-hover-fg) !important;
+    background-image: var(--action-gradient) !important;
+    background-position: 100% 50%;
+    border-color: var(--action-border) !important;
+    box-shadow: 0 14px 30px var(--action-glow) !important;
+    transform: translateY(-2px);
+  }
+
+  button:hover::before,
+  [aria-label="Upload profile photo"]:hover::before {
+    opacity: 1;
+  }
+
+  button:active,
+  [aria-label="Upload profile photo"]:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  button:hover :where(span, strong, small, em) {
+    color: inherit !important;
+  }
+
+  button :where(img),
+  [aria-label="Upload profile photo"] :where(img) {
+    transition: filter 180ms ease, transform 180ms ease;
+  }
+
+  button:hover :where(img),
+  [aria-label="Upload profile photo"]:hover :where(img) {
+    transform: scale(1.06);
+  }
+
+  a {
+    color: var(--link-color);
+    text-decoration-color: transparent;
+    text-underline-offset: 0.22em;
+  }
+
+  a:hover {
+    color: var(--link-hover);
+    text-decoration-color: currentColor;
+    text-shadow: 0 0 18px var(--action-glow);
+  }
+
   .glass {
-    background: rgba(7, 16, 27, 0.68);
-    border: 1px solid rgba(131, 255, 198, 0.18);
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(20px);
+    background: rgba(7, 16, 27, 0.9);
+    border: 1px solid rgba(131, 255, 198, 0.12);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(8px);
   }
 
   .theme-light .glass {
-    background: rgba(255, 255, 255, 0.72);
-    border-color: rgba(30, 144, 255, 0.2);
-    box-shadow: 0 24px 70px rgba(16, 64, 112, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(30, 144, 255, 0.14);
+    box-shadow: 0 16px 40px rgba(16, 64, 112, 0.1);
   }
 
   .glass-strong {
-    background: rgba(6, 12, 22, 0.86);
-    border: 1px solid rgba(209, 140, 255, 0.2);
-    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.52), 0 0 34px rgba(0, 255, 136, 0.1);
-    backdrop-filter: blur(22px);
+    background: rgba(6, 12, 22, 0.94);
+    border: 1px solid rgba(209, 140, 255, 0.14);
+    box-shadow: 0 20px 58px rgba(0, 0, 0, 0.34);
+    backdrop-filter: blur(10px);
   }
 
   .theme-light .glass-strong {
-    background: rgba(255, 255, 255, 0.82);
-    border-color: rgba(30, 144, 255, 0.24);
-    box-shadow: 0 30px 90px rgba(16, 64, 112, 0.18), 0 0 36px rgba(30, 144, 255, 0.1);
+    background: rgba(255, 255, 255, 0.97);
+    border-color: rgba(30, 144, 255, 0.16);
+    box-shadow: 0 18px 48px rgba(16, 64, 112, 0.12);
   }
 
 }
