@@ -3,6 +3,9 @@
   command = "corepack enable && pnpm install --frozen-lockfile && pnpm build"
   publish = "dist"
 
+[build.environment]
+  VITE_API_URL = "https://efichain-backend.onrender.com"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

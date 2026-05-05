@@ -90,14 +90,14 @@ Backend on Render:
 - Root directory: `backend`
 - Build command: `corepack enable && pnpm install --frozen-lockfile`
 - Start command: `pnpm start`
-- Required environment variables: `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL`, `NODE_ENV=production`
+- Required environment variables: `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL=https://efichain-frontend.netlify.app`, `NODE_ENV=production`
 
 Frontend on Netlify/Vercel/Render static site:
 
 - Root directory: `frontend`
 - Build command: `corepack enable && pnpm install --frozen-lockfile && pnpm build`
 - Publish directory: `dist` when Netlify uses the included `netlify.toml`, or `frontend/dist` if configuring from the repository root manually
-- Environment variable: `VITE_API_URL=https://your-render-api-url`
+- Environment variable: `VITE_API_URL=https://efichain-backend.onrender.com`
 
 After deploying the frontend, update the backend `CLIENT_URL` to match the deployed frontend origin so cookies and CORS work.
 
