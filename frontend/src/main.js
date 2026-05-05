@@ -397,6 +397,9 @@ function shell(content) {
       ${state.message ? `<div class="${ui.page} pt-4"><div class="${theme.successBox()}">${state.message}</div></div>` : ""}
       ${state.error ? `<div class="${ui.page} pt-4"><div class="border border-danger/40 bg-danger/10 px-4 py-3 text-sm font-black text-pink-200">${state.error}</div></div>` : ""}
       ${content}
+      <footer class="${ui.page} py-8 text-center text-sm font-bold ${theme.dim()}">
+        © 2026 Abigail Asiedu Efi. All rights reserved.
+      </footer>
     </div>
   `;
 }
