@@ -2,7 +2,6 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const state = {
   user: null,
-  token: localStorage.getItem("coinbase_token"),
   crypto: [],
   view: "market",
   marketMode: "all",
@@ -133,10 +132,6 @@ async function api(path, options = {}) {
     ...options.headers
   };
 
-  if (state.token) {
-    headers.Authorization = `Bearer ${state.token}`;
-  }
-
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers,
@@ -207,8 +202,6 @@ async function submitAuth(event, mode) {
     });
 
     state.user = data.user;
-    state.token = data.token;
-    localStorage.setItem("coinbase_token", data.token);
     state.view = "market";
     state.message = data.message;
     state.error = "";
@@ -226,8 +219,6 @@ async function logout() {
   }
 
   state.user = null;
-  state.token = "";
-  localStorage.removeItem("coinbase_token");
   state.view = "login";
   setNotice({ message: "You have been logged out." });
 }

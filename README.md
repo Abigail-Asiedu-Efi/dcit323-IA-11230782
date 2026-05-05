@@ -15,6 +15,8 @@ Authentication:
 - `GET /profile` - protected profile route.
 - `PATCH /profile/avatar` - protected profile picture update.
 
+The frontend uses cookie-based sessions (`credentials: include`) and does not persist JWT tokens in `localStorage`.
+
 Crypto:
 
 - `GET /crypto` - all tradable cryptocurrencies.
