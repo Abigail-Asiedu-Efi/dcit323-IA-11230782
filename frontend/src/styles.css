@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #05070d;
+  --color-panel: #0b1220;
+  --color-neon: #00ff88;
+  --color-neon-soft: #83ffc6;
+  --color-dodger: #1e90ff;
+  --color-skyline: #52b6ff;
+  --color-acid: #b8ff3c;
+  --color-danger: #ff4d7d;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    margin: 0;
+    color: #ecfeff;
+    background:
+      radial-gradient(circle at 8% 10%, rgba(0, 255, 136, 0.18), transparent 30rem),
+      radial-gradient(circle at 80% 4%, rgba(30, 144, 255, 0.24), transparent 32rem),
+      radial-gradient(circle at 48% 78%, rgba(184, 255, 60, 0.11), transparent 28rem),
+      linear-gradient(135deg, #05070d 0%, #07101b 48%, #030609 100%);
+    font-family: Aptos, "Segoe UI", "Helvetica Neue", sans-serif;
+  }
+
+  body::before {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(to bottom, black, transparent 78%);
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:focus-visible,
+  input:focus-visible {
+    outline: 2px solid #00ff88;
+    outline-offset: 3px;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(7, 16, 27, 0.68);
+    border: 1px solid rgba(131, 255, 198, 0.18);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+  }
+
+  .glass-strong {
+    background: rgba(6, 12, 22, 0.86);
+    border: 1px solid rgba(82, 182, 255, 0.22);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.52), 0 0 34px rgba(30, 144, 255, 0.12);
+    backdrop-filter: blur(22px);
+  }
+
+  .neon-text {
+    text-shadow: 0 0 22px rgba(0, 255, 136, 0.42);
+  }
+}

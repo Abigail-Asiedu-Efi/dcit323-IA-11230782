@@ -1,0 +1,17 @@
+{
+  "name": "coinbase-clone-frontend",
+  "version": "1.0.0",
+  "description": "Functional Coinbase clone frontend wired to a Node/Mongo API.",
+  "type": "module",
+  "packageManager": "pnpm@10.20.0",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite --host 0.0.0.0",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "4.2.4",
+    "tailwindcss": "4.2.4",
+    "vite": "7.3.2"
+  }
+}

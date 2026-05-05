@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: coinbase-clone-api
+    env: node
+    plan: free
+    buildCommand: corepack enable && pnpm install --frozen-lockfile
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: CLIENT_URL
+        sync: false
