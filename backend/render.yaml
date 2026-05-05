@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: coinbase-clone-api
+    name: efichain-api
     env: node
     plan: free
     buildCommand: corepack enable && pnpm install --frozen-lockfile

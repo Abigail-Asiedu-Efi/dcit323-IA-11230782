@@ -1,12 +1,9 @@
-<<<<<<< HEAD
-# dcit318-IA-11230782
-=======
-# Coinbase Clone Full-Stack Prototype
+# EfiChain Full-Stack Prototype
 
 This repository contains both parts of the interim assessment:
 
 - `backend/` - Node.js, Express, MongoDB, Mongoose, JWT auth, REST API.
-- `frontend/` - Vite-powered Coinbase-style frontend consuming the API.
+- `frontend/` - Vite-powered EfiChain frontend consuming the API.
 
 ## API Routes
 
@@ -16,6 +13,7 @@ Authentication:
 - `POST /login` - authenticate and set a JWT HTTP-only cookie.
 - `POST /logout` - clear the auth cookie.
 - `GET /profile` - protected profile route.
+- `PATCH /profile/avatar` - protected profile picture update.
 
 Crypto:
 
@@ -71,4 +69,3 @@ Frontend on Netlify/Vercel/Render static site:
 - Environment variable: `VITE_API_URL=https://your-render-api-url`
 
 After deploying the frontend, update the backend `CLIENT_URL` to match the deployed frontend origin so cookies and CORS work.
->>>>>>> 79f60ea (feat: add frontend application with crypto market tracking and user authentication)

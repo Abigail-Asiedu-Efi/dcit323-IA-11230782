@@ -21,6 +21,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"]
+    },
+    avatar: {
+      type: String,
+      default: "",
+      validate: {
+        validator(value) {
+          return value === "" || /^data:image\/(png|jpe?g|webp);base64,[a-z0-9+/=]+$/i.test(value);
+        },
+        message: "Avatar must be a PNG, JPG, or WebP image."
+      }
     }
   },
   { timestamps: true }

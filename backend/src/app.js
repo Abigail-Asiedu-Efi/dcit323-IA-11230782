@@ -42,13 +42,13 @@ app.use(
     credentials: true
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "750kb" }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
   res.json({
-    message: "Coinbase clone API is online",
+    message: "EfiChain API is online",
     endpoints: ["/register", "/login", "/profile", "/crypto", "/crypto/gainers", "/crypto/new"]
   });
 });

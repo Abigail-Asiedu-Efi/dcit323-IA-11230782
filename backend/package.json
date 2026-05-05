@@ -1,7 +1,7 @@
 {
-  "name": "coinbase-clone-api",
+  "name": "efichain-api",
   "version": "1.0.0",
-  "description": "REST API for a Coinbase clone interim assessment.",
+  "description": "REST API for the EfiChain cryptocurrency platform prototype.",
   "main": "server.js",
   "type": "module",
   "packageManager": "pnpm@10.20.0",
